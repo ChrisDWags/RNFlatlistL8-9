@@ -7,8 +7,31 @@ import {
 } from "react-native";
 import colors from "../styles/colors";
 import defaultStyles from "../styles/defaultStyles";
+import { useState } from "react";
 
 export default function Index() {
+
+  type dataType = {
+    id: string;   // inique identifier for each element in the list (student id)
+    title: string;    // who i display (ex: Isha)
+  }
+
+  const DATA: dataType[] = [
+    {id: '1', title: 'Chris'},
+    {id: '2', title: 'Sohan'},
+    {id: '3', title: 'Isa'},
+    {id: '4', title: 'sid'},
+  ]
+
+  const [selectedId, setSelectedId] = useState<string>('')
+
+  // create a simple function to call when an item is selected
+  // pass a peramenter of the item that was clicked on
+  const selectedList = (item: dataType) => {
+    console.log('Clicked on ' + item.title)
+    setSelectedId(item.id)
+  }
+
   return (
     <View style={defaultStyles.container}>
       <View style={defaultStyles.titleContainer}>
@@ -16,7 +39,26 @@ export default function Index() {
       </View>
       <View style={[defaultStyles.textContainer, { flex: 1 }]}>
         <View style={styles.flatlist}>
-          <Text>This is where our list will go</Text>
+          <FlatList
+            data = {DATA}
+            keyExtractor={(item: dataType) => item.id}
+            extraData={selectedId}
+            renderItem={({ item }) => (
+              <TouchableOpacity onPress={() => selectedList(item)}>
+                <View style={[styles.titleContainer, 
+                  {backgroundColor:
+                    item.id === selectedId
+                     ? colors.primary
+                     : colors. secondary, 
+                  }]}>
+                  <Text style={[styles.titleText, 
+                  {color: item.id === selectedId
+                   ? colors.text.light
+                   : colors.text.dark}]}>{item.title}</Text>
+                </View>
+              </TouchableOpacity>
+            )}
+          />
         </View>
       </View>
     </View>
@@ -27,11 +69,13 @@ const styles = StyleSheet.create({
   flatlist: {
     alignItems: "center",
   },
+  // Styles for each row of flatlist
   titleContainer: {
     marginTop: 5,
     width: 300,
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
+    backgroundColor: 'lightblue'
   },
   titleText: {
     fontSize: 24,
